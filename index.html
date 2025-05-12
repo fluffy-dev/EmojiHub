@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Emoji Hub - Welcome</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #4a001f, #fdf6ee);
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .welcome-box {
+      background-color: white;
+      padding: 3rem;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+    h1 {
+      color: #800020;
+      margin-bottom: 1rem;
+    }
+
+    input {
+      padding: 0.8rem 1rem;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      width: 80%;
+    }
+
+    button {
+      margin-top: 1rem;
+      padding: 0.8rem 1.5rem;
+      background-color: #800020;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #a83242;
+    }
+  </style>
+</head>
+<body>
+  <div class="welcome-box">
+    <h1>👋 Welcome to Emoji Hub</h1>
+    <p>Enter your name to start:</p>
+    <input type="text" id="usernameInput" placeholder="Your name...">
+    <br>
+    <button onclick="startApp()">Enter</button>
+  </div>
+
+  <script>
+    function startApp() {
+      const name = document.getElementById("usernameInput").value.trim();
+      if (!name) {
+        alert("Please enter a name");
+        return;
+      }
+      localStorage.setItem("emojiUser", name);
+      window.location.href = "profile.html";
+    }
+  </script>
+</body>
+</html>

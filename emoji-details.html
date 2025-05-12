@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Emoji Details</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #4a001f, #fdf6ee);
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .details-container {
+      background-color: #fff;
+      border-radius: 20px;
+      padding: 2.5rem;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      text-align: center;
+    }
+
+    .details-container h1 {
+      font-size: 4rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .details-container h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: #800020;
+    }
+
+    .details-container p {
+      margin: 0.5rem 0;
+    }
+
+    .start-button, #aiButton, #favButton {
+      margin-top: 1.5rem;
+      padding: 0.8rem 1.5rem;
+      background-color: #800020;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .start-button:hover, #aiButton:hover, #favButton:hover {
+      background-color: #a83242;
+    }
+
+    #aiResult, #favMessage {
+      margin-top: 1rem;
+      font-style: italic;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="details-container">
+    <h1 id="emojiChar">🙂</h1>
+    <h2 id="emojiName">Loading...</h2>
+
+    <p><strong>Category:</strong> <span id="emojiCategory"></span></p>
+    <p><strong>Group:</strong> <span id="emojiGroup"></span></p>
+    <p><strong>Unicode:</strong> <span id="emojiCode"></span></p>
+
+    <button id="aiButton">🤖 What does this emoji mean?</button>
+    <p id="aiResult"></p>
+
+    <button id="favButton">❤️ Add to favorites</button>
+    <p id="favMessage" style="display:none; color:green; font-style: italic;">✅ Added to favorites!</p>
+
+    <br><br>
+    <a href="emojis.html"><button class="start-button">← Back</button></a>
+  </div>
+
+  <script>
+    const data = JSON.parse(localStorage.getItem("emojiDetails"));
+
+    document.getElementById("emojiChar").textContent = data.htmlCode[0];
+    document.getElementById("emojiName").textContent = data.name;
+    document.getElementById("emojiCategory").textContent = data.category;
+    document.getElementById("emojiGroup").textContent = data.group;
+    document.getElementById("emojiCode").textContent = data.htmlCode[0];
+
+    const aiBtn = document.getElementById("aiButton");
+    const resultBox = document.getElementById("aiResult");
+
+    aiBtn.onclick = async () => {
+      aiBtn.disabled = true;
+      resultBox.textContent = "Thinking... 🤔";
+
+      try {
+        const res = await fetch("http://localhost:5050/ask-ai", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ name: data.name })
+        });
+
+        const result = await res.json();
+        resultBox.textContent = result.answer || "🤷‍♂️ No answer found.";
+      } catch (err) {
+        resultBox.textContent = "⚠️ Failed to connect to AI.";
+      }
+
+      aiBtn.disabled = false;
+    };
+
+    document.getElementById("favButton").onclick = async () => {
+      const user = localStorage.getItem("emojiUser") || "guest";
+
+      await fetch(`http://localhost:5050/favorites/${user}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: data.name })
+      });
+
+      const msg = document.getElementById("favMessage");
+      msg.style.display = "block";
+      setTimeout(() => msg.style.display = "none", 2000);
+    };
+  </script>
+</body>
+</html>

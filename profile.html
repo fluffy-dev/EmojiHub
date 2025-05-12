@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Profile</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #4a001f, #fdf6ee);
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .profile-container {
+      background-color: white;
+      padding: 2.5rem;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+    .profile-container h1 {
+      color: #800020;
+      margin-bottom: 0.5rem;
+    }
+
+    .profile-container p {
+      font-size: 1.2rem;
+    }
+
+    .profile-buttons {
+      margin-top: 2rem;
+    }
+
+    .profile-buttons a, .profile-buttons button {
+      background-color: #800020;
+      color: white;
+      padding: 0.8rem 1.5rem;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      margin: 0.5rem;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .profile-buttons a:hover,
+    .profile-buttons button:hover {
+      background-color: #a83242;
+    }
+  </style>
+</head>
+<body>
+  <div class="profile-container">
+    <h1>Hello, <span id="username">...</span> 👋</h1>
+    <p>You have <strong id="favCount">...</strong> favorite emojis.</p>
+
+    <div class="profile-buttons">
+      <a href="emojis.html">Browse Emojis</a>
+      <a href="favorites.html">My Favorites</a>
+      <button onclick="switchUser()">🔁 Switch User</button>
+    </div>
+  </div>
+
+  <script>
+    const user = localStorage.getItem("emojiUser");
+    if (!user) window.location.href = "index.html";
+    document.getElementById("username").textContent = user;
+
+    fetch(`http://localhost:5050/favorites/${user}`)
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("favCount").textContent = data.length;
+      });
+
+    function switchUser() {
+      localStorage.removeItem("emojiUser");
+      window.location.href = "index.html";
+    }
+  </script>
+</body>
+</html>

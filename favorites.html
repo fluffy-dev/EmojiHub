@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Favorites</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #4a001f, #fdf6ee);
+      color: #333;
+      margin: 0;
+      padding: 2rem;
+    }
+
+    h1 {
+      text-align: center;
+      color: #800020;
+    }
+
+    .buttons {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .buttons button {
+      margin: 0.5rem;
+      background-color: #800020;
+      color: white;
+      border: none;
+      padding: 0.7rem 1.2rem;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .emoji-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 1rem;
+      padding: 1rem;
+    }
+
+    .emoji-card {
+      background-color: white;
+      border-radius: 12px;
+      padding: 1rem;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .emoji-card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body>
+  <h1>My Favorite Emojis</h1>
+
+  <div class="buttons">
+    <button onclick="exportFavorites()">📄 Export Favorites</button>
+    <input type="file" id="importInput" style="display:none" />
+    <button onclick="document.getElementById('importInput').click()">📂 Import Favorites</button>
+  </div>
+
+  <div id="favoritesContainer" class="emoji-grid"></div>
+
+  <script>
+    const user = localStorage.getItem("emojiUser") || "guest";
+    const container = document.getElementById("favoritesContainer");
+
+    fetch(`http://localhost:5050/favorites/${user}`)
+      .then(res => res.json())
+      .then(async favs => {
+        const all = await fetch("emojis.json").then(r => r.json());
+        const data = all.filter(e => favs.includes(e.name));
+
+        if (data.length === 0) {
+          container.innerHTML = "<p style='text-align:center;'>No favorites yet.</p>";
+          return;
+        }
+
+        data.forEach(e => {
+          const card = document.createElement("div");
+          card.className = "emoji-card";
+          card.innerHTML = `<div style="font-size: 2rem;">${e.htmlCode[0]}</div><small>${e.name}</small>`;
+          container.appendChild(card);
+        });
+      });
+
+    document.getElementById("importInput").addEventListener("change", async function(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      try {
+        const text = await file.text();
+        const imported = JSON.parse(text);
+
+        for (const emoji of imported) {
+          await fetch(`http://localhost:5050/favorites/${user}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: emoji.name })
+          });
+        }
+
+        alert("✅ Imported successfully!");
+        location.reload();
+      } catch (err) {
+        console.error("Import failed:", err);
+        alert("⚠️ Failed to import. Invalid file?");
+      }
+    });
+
+    function exportFavorites() {
+      fetch(`http://localhost:5050/favorites/${user}`)
+        .then(res => res.json())
+        .then(async favNames => {
+          const allEmojis = await fetch("emojis.json").then(r => r.json());
+          const filtered = allEmojis.filter(e => favNames.includes(e.name));
+
+          const blob = new Blob([JSON.stringify(filtered, null, 2)], {
+            type: "application/json"
+          });
+
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = `${user}_favorites.json`;
+          a.click();
+          URL.revokeObjectURL(a.href);
+        })
+        .catch(err => {
+          console.error("Export failed:", err);
+          alert("⚠️ Could not export favorites.");
+        });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+<head>
+  <meta charset="UTF-8">
+  <title>Emoji Catalog</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #4a001f, #fdf6ee);
+      color: #333;
+    }
+    header {
+      padding: 1.5rem;
+      text-align: center;
+      background-color: #800020;
+      color: white;
+      font-size: 1.5rem;
+    }
+    .controls {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin: 1.5rem;
+    }
+    .controls input,
+    .controls select {
+      padding: 0.5rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+    .emoji-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 1rem;
+      padding: 1rem 2rem;
+    }
+    .emoji-card {
+      padding: 1rem;
+      border-radius: 12px;
+      background-color: #fff;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      text-align: center;
+      transition: transform 0.2s ease;
+    }
+    .emoji-card:hover {
+      transform: scale(1.05);
+    }
+    .fav-btn {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    Emoji Catalog
+  </header>
+
+  <div class="controls">
+    <input type="text" id="searchInput" placeholder="Search emojis...">
+    <select id="categorySelect">
+      <option value="all">All Categories</option>
+    </select>
+  </div>
+
+  <div id="emojiContainer" class="emoji-grid"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
