@@ -1,7 +1,9 @@
-from sqlalchemy import String, Boolean
-from sqlalchemy.orm import Mapped, mapped_column
+from typing import List
+from sqlalchemy import String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.libs.base_model import Base
+from src.permission.models.user_permission import user_permission_association_table
 
 class UserModel(Base):
     """
@@ -15,7 +17,9 @@ class UserModel(Base):
     - `surname`: *str* - User’s last name (max length: 20, nullable).
     - `login`: *str* - User’s login (max length: 50, unique, indexed).
     - `password`: *str* - Hashed password.
-    - `is_admin`: *bool* - Indicates if the user has admin privileges (default: False).
+
+    **Relationships**:
+    - `permissions`: A many-to-many relationship to `PermissionModel`, indicating the permissions this user has.
 
     **Usage**: Defines the database schema for storing user data.
     """
@@ -25,4 +29,9 @@ class UserModel(Base):
     surname: Mapped[str] = mapped_column(String(20), nullable=True)
     login: Mapped[str] = mapped_column(String(50), unique=True, index=True)
     password: Mapped[str]
-    is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
+
+    permissions: Mapped[List["PermissionModel"]] = relationship(
+        secondary=user_permission_association_table,
+        back_populates="users",
+        lazy="selectin",
+    )
