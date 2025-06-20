@@ -5,6 +5,11 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.libs.base_model import Base
 from src.permission.models.user_permission import user_permission_association_table
 
+from src.emoji.models.emoji import Emoji
+from src.emoji.models.user_favorite_emoji import user_favorite_emoji_association_table
+
+
+
 class UserModel(Base):
     """
     **Description**: SQLAlchemy model representing the `users` database table.
@@ -34,4 +39,10 @@ class UserModel(Base):
         secondary=user_permission_association_table,
         back_populates="users",
         lazy="selectin",
+    )
+
+    created_emojis: Mapped[List["Emoji"]] = relationship(back_populates="creator")
+    favorite_emojis: Mapped[List["Emoji"]] = relationship(
+        secondary=user_favorite_emoji_association_table,
+        back_populates="favorited_by"
     )
