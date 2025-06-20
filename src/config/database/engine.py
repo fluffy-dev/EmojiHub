@@ -1,3 +1,4 @@
+from typing import Optional
 from asyncio import current_task
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
