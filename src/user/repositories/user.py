@@ -228,13 +228,13 @@ class UserRepository:
     @staticmethod
     def _get_dto(instance: UserModel) -> UserDTO:
         """
-        **Description**: Converts a database row to a UserDTO.
+        **Description**: Converts a UserModel ORM instance to a UserDTO.
 
         **Parameters**:
-        - `instance`: *UserModel* - Database row representing a user.
+        - `instance`: *UserModel* - The SQLAlchemy ORM instance representing a user.
 
         **Returns**:
-        - *UserDTO*: Serialized user data.
+        - *UserDTO*: Serialized user data including their permissions.
 
         **Usage**: Helper method to transform database records into DTOs for API responses.
         """
@@ -244,5 +244,5 @@ class UserRepository:
             surname=instance.surname,
             login=instance.login,
             password=instance.password,
-            is_admin=instance.is_admin
+            permissions=[perm.name for perm in instance.permissions],
         )
