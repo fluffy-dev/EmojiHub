@@ -12,4 +12,4 @@ router.include_router(auth_router)
 router.include_router(emoji_router)
 router.include_router(permission_router)
 
-router.include_router(export_router)
+router.include_router(...)
