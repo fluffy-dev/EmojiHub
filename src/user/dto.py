@@ -1,3 +1,4 @@
+from typing import List
 from pydantic import BaseModel, constr, model_validator
 
 class FindUserDTO(BaseModel):
@@ -32,21 +33,21 @@ class UserDTO(BaseModel):
     **Description**: Represents a user’s data for transfer and display purposes.
 
     **Fields**:
-    - `id`: *int* - Unique identifier of the user (optional during creation).
-    - `name`: *constr(max_length=20)* - User’s first name (max 20 characters).
-    - `surname`: *constr(max_length=20)* - User’s last name (max 20 characters).
-    - `login`: *str* - User’s login identifier (e.g., username or email).
-    - `password`: *str* - Hashed password (optional, not included in responses).
-    - `is_admin`: *bool* - Indicates if the user has admin privileges (default: False).
+    - `id`: *int* - Unique identifier of the user.
+    - `name`: *constr(max_length=20)* - User’s first name.
+    - `surname`: *constr(max_length=20)* - User’s last name.
+    - `login`: *str* - User’s login identifier.
+    - `password`: *str* - Hashed password (not included in most responses).
+    - `permissions`: *List[str]* - A list of permission names granted to the user.
 
     **Usage**: Used to serialize user data for API responses or input validation.
     """
-    id: int = None
+    id: int
     name: constr(max_length=20)
     surname: constr(max_length=20)
     login: str
-    password: str = None
-    is_admin: bool = False
+    password: str
+    permissions: List[str] = []
 
 class UpdateUserDTO(BaseModel):
     """
