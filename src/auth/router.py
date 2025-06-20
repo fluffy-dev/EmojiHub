@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status, Header
+from fastapi import APIRouter, status, Header, Depends
 from typing import Optional
 
 from src.auth.dto import (
@@ -8,12 +8,12 @@ from src.auth.dto import (
 from src.auth.depends.service import IAuthService, AuthService
 from src.user.dto import UserDTO
 
-from src.protection import AdminUser, AuthUser
+from src.protection import PermissionChecker
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 @router.post("/register", response_model=UserDTO, status_code=status.HTTP_201_CREATED)
-async def register(dto: RegistrationDTO, auth_service: IAuthService, user: AdminUser):
+async def register(dto: RegistrationDTO, auth_service: IAuthService, user_with_permission: UserDTO = Depends(PermissionChecker({"user:create"})),):
     """
     **Description**: Registers a new user in the system.
 
